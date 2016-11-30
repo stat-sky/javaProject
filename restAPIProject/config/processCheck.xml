@@ -1,0 +1,49 @@
+<?xml version = "1.0" encoding = "utf-8" ?>
+<processChecks>
+  <processCheck>
+    <name>进程inceptor server的jinfo : </name>
+    <service>INCEPTOR_SERVER</service>
+    <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jinfo</command>
+    <properties>
+      <property>
+        <prop_name>java.version</prop_name>
+        <cut_out>0</cut_out>
+        <prop_value></prop_value>
+        <delimited></delimited>
+      </property>
+      <property>
+        <prop_name>agentpath</prop_name>
+        <cut_out>1</cut_out>
+        <prop_value>Xms;Xmx;Xss</prop_value>
+        <delimited> </delimited>
+      </property>
+    </properties>
+  </processCheck>
+  <processCheck>
+    <name>进程inceptor server的jmap前20行 :</name>
+    <service>INCEPTOR_SERVER</service>
+    <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jmap -histo:live | head -n 23</command>
+  </processCheck>
+  <processCheck>
+    <name>进程inceptor server的jstat :</name>
+    <service>INCEPTOR_SERVER</service>
+    <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jstat -gc</command>
+  </processCheck>
+  <processCheck>
+    <name>进程inceptor server的jstack 的RUNNBALE数:</name>
+    <service>INCEPTOR_SERVER</service>
+    <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jstack | grep RUNNABLE | wc -l</command>
+  </processCheck>
+  <processCheck>
+    <name>进程meta store的连接数 :</name>
+    <command>netstat -anp | grep 9083 | wc -l</command>
+  </processCheck>
+  <processCheck>
+    <name>进程inceptor server2的连接数 :</name>
+    <command>netstat -npl | grep 10000 | grep established | wc -l</command>
+  </processCheck>
+  <processCheck>
+    <name>进程active namenode的连接数 :</name>
+    <command>netstat -anp | grep 8020 | wc -l</command>
+  </processCheck>
+</processChecks>

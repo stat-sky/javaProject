@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<logs>
+  <log>
+    <service>INCEPTOR_SERVER</service>
+    <filepath>/var/log/inceptorsql1/hive-server2.log</filepath>
+    <keys>
+      <key>
+        <name>currentSession</name>
+        <value>current sessions</value>
+      </key>
+      <key>
+        <name>timedOut</name>
+        <value>is time-out and will be closed</value>
+      </key>
+      <key>
+        <name>duration</name>
+        <value>duration</value>
+      </key>
+      <key>
+        <name>execption</name>
+        <value>ERROR</value>
+      </key>
+    </keys>
+  </log>
+  <log>
+    <service>INCEPTOR_METASTORE</service>
+    <filepath>/var/log/inceptorsql1/hive-metastore.log</filepath>
+    <keys>
+      <key>
+        <name>execption</name>
+        <value>ERROR</value>
+      </key>
+    </keys>
+  </log>
+  <log>
+    <service>NAMENODE</service>
+    <filepath>/var/log/hdfs1/hadoop-hdfs-namenode-*.log</filepath>
+    <keys>
+      <key>
+        <name>execption</name>
+        <value>ERROR</value>
+      </key>
+    </keys>
+  </log>
+</logs>
