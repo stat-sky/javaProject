@@ -34,6 +34,7 @@
   </log>
   <log>
     <service>NAMENODE</service>
+    <!-- hostname用*代替 -->
     <filepath>/var/log/hdfs1/hadoop-hdfs-namenode-*.log</filepath>
     <keys>
       <key>

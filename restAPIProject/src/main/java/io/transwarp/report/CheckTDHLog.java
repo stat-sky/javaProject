@@ -19,12 +19,14 @@ import org.dom4j.Element;
 public class CheckTDHLog {
 
 	private static Logger logger = Logger.getLogger(CheckTDHLog.class);
+	private String hostname;
 	private String ipAddress;
 	private String nodeUser;
 	private String nodePwd;
 	private List<String> roleTypes;
 	
-	public CheckTDHLog(String ipAddress, String nodeUser, String nodePwd, List<String> roleTypes) {
+	public CheckTDHLog(String hostname, String ipAddress, String nodeUser, String nodePwd, List<String> roleTypes) {
+		this.hostname = hostname;
 		this.ipAddress = ipAddress;
 		this.nodeUser = nodeUser;
 		this.nodePwd = nodePwd;
@@ -49,12 +51,13 @@ public class CheckTDHLog {
 			logger.info("roleType is : " + roleTypeMatch);
 			if(hasLog) {
 				String filepath = config.elementText("filepath");
+				String nowfile = CommonString.prop_env.getProperty("bufferPath") + CommonUtil.getFileNameHas(filepath.replaceAll("\\*", this.hostname));
 				//执行shell脚本将需要解析的日志拷贝到本地
 				StringBuffer command = new StringBuffer("sh ");
 				command.append(CommonString.prop_report.getProperty("scp_shell"));
 				command.append(" ").append(this.nodePwd);
 				command.append(" ").append(this.nodeUser).append("@").append(this.ipAddress).append(":").append(filepath);
-				command.append(" ").append(CommonString.prop_env.getProperty("bufferPath"));
+				command.append(" ").append(nowfile);
 				logger.info("scp command is : " + command);
 				try {
 					SessionTool.executeLocal(command.toString());
@@ -62,14 +65,29 @@ public class CheckTDHLog {
 					logger.error("scp log file error : " + e.getMessage());
 				}
 				
-				//读取日志并解析，将最近一天的日志存下
+				List<String> logs = this.readLog(nowfile);
+
+				//获取关键字
+				List<Element> keys = config.element("keys").elements("key");
+				for(Element key : keys) {
+					String keyValue = key.elementText("value");
+					List<String> getLog = new ArrayList<String>();
+					for(String log : logs) {
+						if(log.indexOf(keyValue) != -1) {
+							getLog.add(log);
+							getLog.add("\n");
+						}
+					}
+					FileUtil.writeToFile(getLog, nowfile.substring(0, nowfile.indexOf(".")) + "-" + key.elementText("name") + ".log");
+				}
+/*				//读取日志并解析，将最近一天的日志存下
 				String logName = CommonUtil.fileFormat(filepath);
 				//获取在本地的路径
 				String bufferPath = CommonString.prop_env.getProperty("bufferPath");
 				try {
 					String[] lines = SessionTool.executeLocal("ls " + bufferPath).split("\n");
 					for(String line : lines) {
-						if(line.matches(logName + "\\S+")) {
+						if(line.matches(logName + "\\S+" + this.hostname + ".log")) {
 							String nowPath = bufferPath + line;
 							List<String> logs = this.readLog(nowPath);
 
@@ -90,7 +108,7 @@ public class CheckTDHLog {
 					}
 				}catch(Exception e) {
 					logger.error(e.getMessage());
-				}
+				}*/
 			}
 		}
 	}

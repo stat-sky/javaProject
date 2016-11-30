@@ -64,7 +64,7 @@ public class MainReport {
 				logger.info("check process final");
 				
 				//日志检查
-				CheckTDHLog logCheck = new CheckTDHLog(ipAddress, nodeUser, nodePwd, roleTypes);
+				CheckTDHLog logCheck = new CheckTDHLog(hostname, ipAddress, nodeUser, nodePwd, roleTypes);
 				logCheck.checkLog();
 				
 				session.close();
@@ -123,6 +123,6 @@ public class MainReport {
 		MainReport report = new MainReport();
 		report.getReport("/home/xhy/temp/report.txt");
 		long endTime = System.currentTimeMillis();
-		System.out.println("cost time is " + (endTime - startTime) * 1.0 / 1000 / 60 + "  min");
+		System.out.println("cost time is " + (endTime - startTime) * 1.0 / 1000 + "  s");
 	}
 }

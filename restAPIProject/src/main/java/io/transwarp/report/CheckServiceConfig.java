@@ -86,7 +86,7 @@ public class CheckServiceConfig {
 			}
 		}catch(Exception e) {
 			logger.error("error at get config of " + serviceType + " : " + e.getMessage());
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }

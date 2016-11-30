@@ -21,45 +21,42 @@ public class ConnectionTool {
 	
 	public static Connection getConnection() {
 		String securityType = CommonString.prop_env.getProperty("securityType");
-		String inceptorserverIP = CommonString.prop_env.getProperty("inceptorserverIP");
-		return ConnectionTool.getConnection(securityType, inceptorserverIP);
+		String url = CommonString.prop_env.getProperty("inceptorURL");
+		if(securityType.equals("kerberos")) {
+			String kerberosPath = CommonString.prop_env.getProperty("kerberosPath");
+			return ConnectionTool.getConnection(securityType, url, kerberosPath);
+		}else {
+			String username = CommonString.prop_env.getProperty("jdbcUser");
+			String password = CommonString.prop_env.getProperty("jdbcPwd");
+			return ConnectionTool.getConnection(securityType, url, username, password);
+		}
 	}
-	public static Connection getConnection(String securityType, String ipAddress) {
-		return ConnectionTool.getConnection(securityType, ipAddress, "10000");
-	}
-	public static Connection getConnection(String securityType, String ipAddress, String port) {
-		return ConnectionTool.getConnection(securityType, ipAddress, port, "system");
-	}
-	public static Connection getConnection(String securityType, String ipAddress, String port, String database) {
-		String jdbcUser = CommonString.prop_env.getProperty("jdbcUser");
-		String jdbcPwd = CommonString.prop_env.getProperty("jdbcPwd");
-		return ConnectionTool.getConnection(securityType, ipAddress, port, database, jdbcUser, jdbcPwd);
-	}
-	public static Connection getConnection(String securityType, String ipAddress, String port, String database, String jdbcUser, String jdbcPwd) {
+	public static Connection getConnection(String securityType, String url, String kerberosPath) {
 		Connection connection = null;
+		url = url + ";" + kerberosPath;
 		try {
-			if(securityType.equals("simple")) {
-				String url = "jdbc:hive2://" + ipAddress + ":" + port + "/" + database;
-				logger.info("security is : " + securityType + "url of connect database is : " + url);
-				connection = DriverManager.getConnection(url);
-			}else if(securityType.equals("kerberos")) {
-				String url = "jdbc:hive2://tw-node110:10000/default;principal=hive/tw-node110@TDH;"
-						+ "kuser=hive;keytab=/home/xhy/temp/hive.keytab;authentication=kerberos;krb5conf=/home/xhy/temp/krb5.conf";
-//				String url = CommonString.prop_env.getProperty("url");
-//				logger.info(url);
-//				connection = DriverManager.getConnection(url);
-			}else {
-				String url = "jdbc:hive2://" + ipAddress + ":" + port + "/" + database;
-				logger.info("security is : " + securityType + "url of connect database is : " + url);
-				connection = DriverManager.getConnection(url, jdbcUser, jdbcPwd);
-			}
-			
+			connection = DriverManager.getConnection(url);
 		}catch(Exception e) {
-			logger.error("get connection error : " + e.getMessage());
-			e.printStackTrace();
+			logger.error("get connection of Kerberos is error : " + e.getMessage());
 		}
 		return connection;
 	}
+	public static Connection getConnection(String securityType, String url, String username, String password) {
+		Connection connection = null;
+		try {
+			if(securityType.equalsIgnoreCase("simple")) {
+				logger.info("securityType is " + securityType + " , url is : " + url);
+				connection = DriverManager.getConnection(url);
+			}else if(securityType.equalsIgnoreCase("ldap") || securityType.equalsIgnoreCase("all")) {
+				logger.info("securityType is " + securityType + " , url is : " + url);
+				connection = DriverManager.getConnection(url, username, password);
+			}
+		}catch(Exception e) {
+			logger.error("get connection error : " + e.getMessage());
+		}
+		return connection;
+	}
+	
 	
 
 }

@@ -79,11 +79,10 @@ public class CheckTDHData {
 		List<String> tableInfos = new ArrayList<String>();
 		logger.info("number of table is : " + tables.size());
 		for(TableBean table : tables) {
-//			logger.info("check table : " + table.getTable_name());
 			//表数据路径
 			String dataPath = table.getTable_location();
 			dataPath = dataPath.substring(19);
-			logger.debug("table path is : " + dataPath);
+			logger.info("table path is : " + dataPath);
 			//查询表空间中文件和文件夹大小
 			Queue<String> queue = new LinkedList<String>();
 			queue.offer(dataPath);

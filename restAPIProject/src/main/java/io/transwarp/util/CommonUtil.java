@@ -217,7 +217,7 @@ public class CommonUtil {
 	 * @param file
 	 * @return
 	 */
-    public static String fileFormat(String file) {
+    public static String getFileNameNot(String file) {
         String formatted;
         String temp=file;
         int prefix=temp.lastIndexOf("/")+1;
@@ -230,7 +230,12 @@ public class CommonUtil {
         return formatted;
     }
     
-    public static String getFileName(String path) {
+    /**
+     * 获取文件名称，包括扩展名
+     * @param path
+     * @return
+     */
+    public static String getFileNameHas(String path) {
     	String[] paths = path.split("/");
     	if(paths.length < 1) return null;
     	return paths[paths.length - 1];
