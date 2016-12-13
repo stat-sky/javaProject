@@ -18,7 +18,7 @@ public class ConfigRead {
 		super();
 		File file = new File(path);
 		if(!file.exists()) {
-			throw new IOException("xml file not found");
+			throw new IOException("xml file not found : " + path);
 		}
 		logger.debug("load xml configuration is " + path);
 		Document document = new SAXReader().read(file);
@@ -34,8 +34,9 @@ public class ConfigRead {
 	 */
 	public Element getElement(String key, String value) {
 		for(Element element : values) {
+//			logger.info(element.elementText(key));
 			String keyValue = element.elementText(key);
-			if(key != null && key.equalsIgnoreCase(value)) {
+			if(keyValue != null && keyValue.equals(value)) {
 				return element;
 			}
 		}

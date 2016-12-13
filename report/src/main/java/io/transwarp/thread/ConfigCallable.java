@@ -33,7 +33,7 @@ public class ConfigCallable implements Callable<Map<String, byte[]>>{
 			Element config = Constant.prop_restapi.getElement("purpose", Constant.DOWNLOAD_CONFIG);
 			Map<String, Object> urlParam = new HashMap<String, Object>();
 			urlParam.put("serviceId", this.serviceId);
-			urlParam.put("fileName", Constant.prop_env.getProperty("fileName"));
+			urlParam.put("fileName", "config");
 			String url = UtilTool.buildURL(config.elementText("url"), urlParam);
 			files = this.method.getConfig(url, serviceType);
 		}catch(Exception e) {

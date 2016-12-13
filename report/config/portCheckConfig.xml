@@ -1,0 +1,17 @@
+<portChecks>
+  <portCheck>
+    <roleType>inceptor server2</roleType>
+    <port>10000</port>
+    <command>netstat -npl | grep 10000 | grep establinshed | wc -l</command>
+  </portCheck>
+  <portCheck>
+    <roleType>meta store</roleType>
+    <port>9083</port>
+    <command>netstat -anp | grep 9083 | wc -l</command>
+  </portCheck>
+  <portCheck>
+    <roleType>active namenode</roleType>
+    <port>8020</port>
+    <command>netstat -anp | grep 8020 | wc -l</command>
+  </portCheck>
+</portChecks>

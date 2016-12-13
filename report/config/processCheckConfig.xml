@@ -1,47 +1,26 @@
-<? xml version = "1.0" encoding = "utf-8" ?>
 <processChecks>
   <processCheck>
-    <name>进程 inceptor server 的 jinfo 检测 :</name>
-    <service>INCEPTOR_SERVER</service>
+    <name>服务 InceptorServer2 进程的 jinfo 检测 :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jinfo</command>
-    <property>java.version;agentpath(Xms,Xmx,Xss)</property>
+    <property>java.version;agentpath(Xmx,Xmx,Xss)</property>
+    <delimited> </delimited>
     <resident>false</resident>
   </processCheck>
   <processCheck>
-    <name>进程 inceptor server 的 jmap 前 20 行 :</name>
-    <service>INCEPTOR_SERVER</service>
-    <!-- 前 3 行为标题，所以取 23 -->
+    <name>服务 InceptorServer2 进程的 jmap 前 20 行 :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jmap -histo:live | head -n 23</command>
+    <delimited>2</delimited>  <!-- 表示至少二个空格 -->
     <resident>false</resident>
   </processCheck>
   <processCheck>
-    <name>进程 inceptor server 的 jstat :</name>
-    <service>INCEPTOR_SERVER</service>
+    <name>服务 InceptorServer2 进程的 jstat gc :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jstat -gc</command>
-    <resident>true</resident>
+    <delimited>1</delimited>  <!-- 表示至少一个空格 -->
+    <resident>truc</resident>
   </processCheck>
   <processCheck>
-    <name>进程 inceptor server 的 jstack 的 RUNNABLE 数量 :</name>
-    <service>INCEPTOR_SERVER</service>
+    <name>服务 InceptorServer2 进程的 jstack NUMABLE :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jstack | grep RUNNABLE | wc -l</command>
-    <resident>false</resident>
-  </processCheck>
-  <processCheck>
-    <name>meta store 的连接数 :</name>
-    <service>all</service>
-    <command>netstat -anp | grep 9083 | wc -l</command>
-    <resident>false</resident>
-  </processCheck>
-  <processCheck>
-    <name>inceptor server2 的连接数 :</name>
-    <service>all</service>
-    <command>netstat -npl | grep 10000 | grep established | wc -l</command>
-    <resident>false</resident>
-  </processCheck>
-  <processCheck>
-    <name>active namenode 的连接数 :</name>
-    <service>all</service>
-    <command>netstat -anp | grep 8020 | wc -l</command>
     <resident>false</resident>
   </processCheck>
 </processChecks>

@@ -46,7 +46,7 @@ public class HttpMethodTool {
 	 * @throws Exception
 	 */
 	public static HttpMethodTool getMethod() throws Exception{
-		String manager = Constant.prop_env.getProperty("manager");
+		String manager = "http://" + Constant.prop_env.getProperty("manager") + ":8180";
 		String username = Constant.prop_env.getProperty("username");
 		String password = Constant.prop_env.getProperty("password");
 		if(manager == null || username == null || password == null) {
@@ -182,7 +182,7 @@ public class HttpMethodTool {
 			HttpEntity entity = this.getHttpMethod(url);
 			logger.info("execute url is : \"" + url + "\", httpMethod is get");
 			InputStream inputStream = entity.getContent();
-			String outputPath = Constant.bufferPath + fileName + ".keytab";
+			String outputPath = Constant.goalPath + fileName + ".keytab";
 			FileOutputStream outputStream = new FileOutputStream(outputPath);
 			IOUtils.copy(inputStream, outputStream);
 			inputStream.close();

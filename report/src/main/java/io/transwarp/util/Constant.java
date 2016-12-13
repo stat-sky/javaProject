@@ -43,6 +43,10 @@ public final class Constant {
 	 */
 	public static String processCheck_path;
 	/**
+	 * 端口检测配置路径
+	 */
+	public static String portCheck_path;
+	/**
 	 * 发送文件的shell脚本路径
 	 */
 	public static String scp_path;
@@ -53,7 +57,7 @@ public final class Constant {
 	/**
 	 * 输出路径
 	 */
-	public static String bufferPath;
+	public static String goalPath;
 	/**
 	 * 环境配置读取
 	 */
@@ -65,7 +69,7 @@ public final class Constant {
 	/**
 	 * 报告配置读取
 	 */
-	public static Properties prop_report = new Properties();
+	public static ConfigRead prop_report = null;
 	/**
 	 * rest api配置读取
 	 */
@@ -78,6 +82,10 @@ public final class Constant {
 	 * 进程检测配置读取
 	 */
 	public static ConfigRead prop_processCheck = null;
+	/**
+	 * 端口检测配置读取
+	 */
+	public static ConfigRead prop_portCheck = null;
 	/**
 	 * 日期格式设置
 	 */
@@ -114,16 +122,18 @@ public final class Constant {
 			report_path = prop_env.getProperty("report_path");
 			logCheck_path = prop_env.getProperty("logCheck_path");
 			processCheck_path = prop_env.getProperty("processCheck_path");
+			portCheck_path = prop_env.getProperty("portCheck_path");
 			scp_path = prop_env.getProperty("scp_path");
 			kerberos_path = prop_env.getProperty("kerberos_path");
-			bufferPath = prop_env.getProperty("bufferPath");
+			goalPath = prop_env.getProperty("goalPath");
 			
 			//加载其他配置
 			prop_metric.load(new FileInputStream(metric_path));
-			prop_report.load(new FileInputStream(report_path));
+			prop_report = new ConfigRead(report_path);
 			prop_restapi = new ConfigRead(restapi_path);
 			prop_logCheck = new ConfigRead(logCheck_path);
 			prop_processCheck = new ConfigRead(processCheck_path);
+			prop_portCheck = new ConfigRead(portCheck_path);
 		}catch(Exception e) {
 			logger.error("load configuration error : " + e.getMessage());
 		}

@@ -1,4 +1,3 @@
-<? xml version = "1.0" version = "utf-8" ?>
 <logChecks>
   <logCheck>
     <name>inceptorServer</name>

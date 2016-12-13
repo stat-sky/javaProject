@@ -27,21 +27,22 @@ public class SessionTool {
 		this.connection.authenticateWithPassword(nodeUser, nodePwd);
 	}
 	
-	public static SessionTool getSession(String ipAddress, String nodeUser, String nodePwd) throws Exception{
-		if(sessionTool == null || checkInfo(ipAddress, nodeUser, nodePwd)) {
-			sessionTool = new SessionTool(ipAddress, nodeUser, nodePwd);
+	public static SessionTool getSession(String ipAddress1, String nodeUser1, String nodePwd1) throws Exception{
+		if(!checkInfo(ipAddress1, nodeUser1, nodePwd1)) {
+			throw new RuntimeException("ipAddress, nodeUser, nodePwd must not be null");
+		}
+		if(sessionTool == null || !ipAddress1.equals(ipAddress) || !nodeUser1.equals(nodeUser) || !nodePwd1.equals(nodePwd)) {
+			if(sessionTool != null) sessionTool.close();
+			sessionTool = new SessionTool(ipAddress1, nodeUser1, nodePwd1);
 		}
 		return sessionTool;
 	}
 	
 	public static boolean checkInfo(String ipAddress1, String nodeUser1, String nodePwd1) {
 		boolean ok = true;
-		if(ipAddress1 == null || ipAddress.equals("") || nodeUser1 == null || nodeUser1.equals("") || nodePwd1 == null || nodePwd1.equals("")) {
+		if(ipAddress1 == null || ipAddress1.equals("") || nodeUser1 == null || nodeUser1.equals("") || nodePwd1 == null || nodePwd1.equals("")) {
 			ok = false;
 			logger.error("ipAddress, nodeUser, nodePwd must not be null");
-		}
-		if(ipAddress.equals(ipAddress1) || nodeUser.equals(nodeUser1) || nodePwd.equals(nodePwd1)) {
-			ok = false;
 		}
 		return ok;
 	}

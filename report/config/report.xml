@@ -1,0 +1,150 @@
+<reports>
+  <!-- 系统参数检测 -->
+  <report>
+    <topic>OS</topic>
+    <name>系统参数检测 : </name>
+    <property>vm.swappiness;vm.min_free_kbytes;vm.zone_reclaim_mode;huge page</property>
+  </report>
+  <report>
+    <topic>vm.swappiness</topic>
+    <command>sysctl -n vm.swappiness</command>
+  </report>
+  <report>
+    <topic>vm.min_free_kbytes</topic>
+    <command>sysctl -n vm.min_free_kbytes</command>
+  </report>
+  <report>
+    <topic>vm.zone_reclaim_mode</topic>
+    <command>sysctl -n vm.zone_reclaim_mode</command>
+  </report>
+  <report>
+    <topic>huge page</topic>
+    <command>cat /sys/kernel/mm/redhat_transparent_hugepage/defrag</command>
+  </report>
+  <!-- 环境变量检测 -->
+  <report>
+    <topic>environment</topic>
+    <name>环境变量检测 : </name>
+    <property>JAVA_HOME;jdk_version;DNS;iptables</property>
+  </report>
+  <report>
+    <topic>NTP</topic>
+    <name>NTP时间同步 :</name>
+    <command>ntpq -p</command>
+  </report>
+  <report>
+    <topic>JAVA_HOME</topic>
+    <name>java路径 :</name>
+    <command>echo $JAVA_HOME</command>
+  </report>
+  <report>
+    <topic>jdk_version</topic>
+    <name>jdk 版本 :</name>
+    <command>java -version 2>&amp;1</command>
+  </report>
+  <report>
+    <topic>DNS</topic>
+    <name>DNS :</name>
+    <command>cat /etc/resolv.conf</command>
+  </report>
+  <report>
+    <topic>iptables</topic>
+    <name>防火墙状态 : </name>
+    <command>service iptables status</command>
+  </report>
+  <!-- 网络配置 -->
+  <report>
+    <topic>network</topic>
+    <name>网络配置检测 : </name>
+    <property>ip;hosts</property>
+  </report>
+  <report>
+    <topic>ip</topic>
+    <name>网卡检测 : </name>
+    <command>ip addr</command>
+  </report>
+  <report>
+    <topic>hosts</topic>
+    <name>hosts : </name>
+    <command>cat /etc/hosts</command>
+  </report>
+  <!-- 磁盘挂载检测 -->
+  <report>
+    <topic>disk</topic>
+    <name>磁盘检测 : </name>
+    <property>memory;mount</property>
+  </report>
+  <report>
+    <topic>memory</topic>
+    <name>磁盘空间使用情况 : </name>
+    <command>df -h</command>
+  </report>
+  <report>
+    <topic>mount</topic>
+    <name>磁盘挂载情况 : </name>
+    <command>cat /etc/fstab</command>
+  </report>
+  <!-- 平台服务检测 -->
+  <report>
+    <topic>services</topic>
+    <name>平台服务配置检测 : </name>
+    <property>HDFS;INCEPTOR_SQL;YARN;HYPERBASE;ELASTICSEARCH</property>
+  </report>
+  <!-- HDFS服务配置文件 -->
+  <report>
+    <topic>core-site.xml</topic>
+    <property>io.compression.codecs;fs.defaultFS;io.file.buffer.size</property>
+  </report>
+  <report>
+    <topic>hdfs-site.xml</topic>
+    <property>dfs.namenode.rpc-address.nameservice1.nn2;dfs.namenode.rpc-address.nameservice1.nn1;dfs.client.socket-timeout;dfs.nameservices;dfs.datanode.data.dir.perm;dfs.ha.namenodes.nameservice1;dfs.datanode.data.dir;dfs.datanode.balance.bandwidthPerSec;dfs.datanode.du.reserved;fs.hdfs.impl.disable.cache;fs.file.impl.disable.cache;dfs.namenode.http-address.nameservice1.nn2;dfs.namenode.http-address.nameservice1.nn1;</property>
+  </report>
+  <report>
+    <topic>hadoop-env.sh</topic>
+    <property>HADOOP_NAMENODE_OPTS;HADOOP_SECONDARYNAMENODE_OPTS;HADOOP_DATANODE_OPTS;HADOOP_BALANCER_OPTS;HADOOP_JOURNALNODE_OPTS;</property>
+  </report>
+  <report>
+    <topic>yarn-site.xml</topic>
+    <property>yarn.scheduler.maximum-allocation-mb;yarn.scheduler.maximum-allocation-vcores;yarn.nodemanager.resource.cpu-vcores;yarn.nodemanager.resource.memory-mb;</property>
+  </report>
+  <report>
+    <topic>yarn-env.sh</topic>
+    <property>YARN_NODEMANAGER_HEAPSIZE;YARN_RESOURCEMANAGER_HEAPSIZE;YARN_HISTORYSERVER_HEAPSIZE;YARN_TIMELINESERVER_HEAPSIZE</property>
+  </report>
+  <report>
+    <topic>hbase-site.xml</topic>
+    <property>hbase.hstore.blockingStoreFiles;hbase.sservice.local.cacheinterval;hbase.regionserver.fileSplitTimeout;hbase.hregion.max.filesize;hbase.coprocessor.master.classes;hbase.client.operation.timeout;zookeeper.session.timeout;hbase.rpc.timeout;hbase.sservice.local.mergeinterval;hbase.hregion.memstore.mslab.enabled;hbase.regionserver.global.memstore.upperLimit;hbase.hregion.memstore.flush.size;hbase.coprocessor.region.classes;hfile.block.cache.size;hbase.regionserver.global.memstore.lowerLimit;</property>
+  </report>
+  <report>
+    <topic>hbase-env.sh</topic>
+    <property>HBASE_MASTER_OPTS;HBASE_REGIONSERVER_OPTS;HBASE_THRIFT_OPTS;</property>
+  </report>
+  <report>
+    <topic>hive-site.xml</topic>
+    <property>hive.stats.dbconnectionstring;hive.metastore.uris;hive.server2.session.check.interval;hive.aux.jars.path;hive.server2.idle.session.timeout;javax.jdo.option.ConnectionURL;javax.jdo.option.ConnectionUserName;hive.exec.dynamic.partition;hive.exec.compress.output;hive.server2.authentication;hive.server2.idle.operation.timeout</property>
+  </report>
+  <report>
+    <topic>hive-env.sh</topic>
+    <property>INCEPTOR_SERVER_MEMORY</property>
+  </report>
+  <report>
+    <topic>elasticsearch-env</topic>
+    <property>ES_HEAP_SIZE</property>
+  </report>
+  <!-- 数据检测 -->
+  <report>
+    <topic>HDFSCheck</topic>
+    <name>数据检测 : </name>
+    <property>report;fsck</property>
+  </report>
+  <report>
+    <topic>report</topic>
+    <name>HDFS集群检测报告 : </name>
+    <command>hdfs dfsadmin -report</command>
+  </report>
+  <report>
+    <topic>fsck</topic>
+    <name>fsck</name>
+    <command>hdfs fsck /</command>
+  </report>
+</reports>

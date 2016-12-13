@@ -64,7 +64,7 @@ public class ServiceCallable implements Callable<Map<String, ServiceBean>>{
 				}
 			}
 		}catch(Exception e) {
-			logger.error("find service information error : " + e.getMessage());
+			logger.error("find service information error : " + e.getMessage() + " : " + e.getCause());
 		}
 		return services;
 	}

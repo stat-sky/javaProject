@@ -50,7 +50,7 @@ public class ServiceBean {
 	public String getId() {
 		return id;
 	}
-	public void setServiceId(String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getName() {

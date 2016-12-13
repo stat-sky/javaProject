@@ -72,7 +72,7 @@ public final class UtilTool {
 			throw new BuildURLException("原始url切分错误");
 		}
 		urlBuild.append(urlSplits[0]);
-		for(int i = 0; i < numberOfSplit; i++) {
+		for(int i = 1; i < numberOfSplit; i++) {
 			String[] items = urlSplits[i].split("\\}");
 			Object value = urlParam.get(items[0]);
 			if(value == null || value.equals("")) {
@@ -173,7 +173,7 @@ public final class UtilTool {
 		Map<String, byte[]> answer = new HashMap<String, byte[]>();
 		GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
 		//中间以tar文件输出
-		StringBuffer outputPath = new StringBuffer(Constant.bufferPath);
+		StringBuffer outputPath = new StringBuffer(Constant.goalPath);
 		outputPath.append(serviceType).append("-").append("config.tar");
 		File outputFile = new File(outputPath.toString());
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
@@ -258,7 +258,7 @@ public final class UtilTool {
 	/**
 	 * 使用给定的字符将原始字符串填充至指定长度
 	 * @param oldString 需要进行填充的原始字符串
-	 * @param goalLength 需要填充至的长度
+//	 * @param goalLength 需要填充至的长度
 	 * @param ch 用来填充的字符
 	 * @return 填充后的字符串
 	 */
@@ -270,5 +270,34 @@ public final class UtilTool {
 			newString.append(ch);
 		}
 		return newString.toString();
+	}
+	
+	/**
+	 * 将list改为数组
+	 * @param list
+	 * @return
+	 */
+	public static String[] changeListToStrings(List<String> list) {
+		int length = list.size();
+		String[] items = new String[length];
+		for(int i = 0; i < length; i++) {
+			items[i] = list.get(i);
+		}
+		return items;
+	}
+	
+	/**
+	 * 在oldString字符串的每行前添加value字符串
+	 * @param oldString 要进行处理的字符串
+	 * @param value 添加在每行开头的字符串
+	 * @return 处理结果
+	 */
+	public static String retract(String oldString, String value) {
+		StringBuffer result = new StringBuffer();
+		String[] lines = oldString.split("\n");
+		for(String line : lines) {
+			result.append(value).append(line).append("\n");
+		}
+		return result.toString();
 	}
 }

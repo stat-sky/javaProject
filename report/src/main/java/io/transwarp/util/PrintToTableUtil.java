@@ -11,8 +11,23 @@ public class PrintToTableUtil {
 	public static String printToTable(List<String[]> listMap, int centLength) throws Exception {
 		int rowCount = listMap.size();
 		String[][] maps = new String[rowCount][];
+		int columnCount = 0;
 		for(int i = 0; i < rowCount; i++) {
 			maps[i] = listMap.get(i);
+			int length = maps[i].length;
+			if(i == 0) {
+				columnCount = length;
+			}else {
+				if(length < columnCount) {
+					String[] newMap = new String[length];
+					for(int j = 0; j < columnCount; j++) {
+						if(j < length) newMap[j] = maps[0][j];
+						else newMap[length - 1] += maps[0][j];
+					}
+					maps[0] = newMap;
+					columnCount = length;
+				}
+			}
 		}
 		return printToTable(maps, centLength);
 	}
@@ -90,4 +105,5 @@ public class PrintToTableUtil {
 		answer.append(results[rowCount].toString()).append("\n");
 		return answer.toString();
 	}
+	
 }
