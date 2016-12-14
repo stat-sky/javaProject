@@ -23,6 +23,10 @@ public final class Constant {
 	 */
 	public static final String SELECT_TABLES = "select database_name, table_name, table_type, transactional, table_format, table_location, owner_name from system.tables_v;";
 	/**
+	 * 日志获取范围
+	 */
+	public static double logTimeRange = 24 * 60 * 60 * 1000;
+	/**
 	 * rest api调用配置路径
 	 */
 	public static String restapi_path;

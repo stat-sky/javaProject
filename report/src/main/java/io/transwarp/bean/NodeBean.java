@@ -182,6 +182,10 @@ public class NodeBean {
 			this.roles.add(role.getString("roleType"));
 		}
 	}
+	public void addRole(String roleType) {
+		if(this.roles == null) this.roles = new ArrayList<String>();
+		roles.add(roleType);
+	}
 	
 	@Override
 	public String toString() {

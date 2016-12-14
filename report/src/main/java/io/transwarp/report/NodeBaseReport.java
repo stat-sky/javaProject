@@ -80,7 +80,7 @@ public class NodeBaseReport {
 				String result = this.session.executeDis(command).trim();
 				maps_systemCheck.add(new String[]{param, result});
 			}
-			answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps_systemCheck, 20), "  ")).append("\n\n");
+			answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps_systemCheck, 35), "  ")).append("\n\n");
 			
 
 			//系统环境检测

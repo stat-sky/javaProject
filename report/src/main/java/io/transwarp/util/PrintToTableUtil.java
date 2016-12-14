@@ -22,7 +22,7 @@ public class PrintToTableUtil {
 					String[] newMap = new String[length];
 					for(int j = 0; j < columnCount; j++) {
 						if(j < length) newMap[j] = maps[0][j];
-						else newMap[length - 1] += maps[0][j];
+						else newMap[length - 1] += " " + maps[0][j];
 					}
 					maps[0] = newMap;
 					columnCount = length;

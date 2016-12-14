@@ -143,6 +143,10 @@ public class MainReport {
 			output.write(nodeReport.getNodeCheckReport());
 			//平台服务配置检测
 			output.write(this.configs.get(hostname));
+			
+			//节点日志检测
+			TdhLogReport logReport = new TdhLogReport(node, nodeUser, nodePwd);
+			logReport.getLogReport();
 		}
 		output.flush();
 		output.close();
@@ -156,8 +160,11 @@ public class MainReport {
 	
 	public static void main(String[] args) {
 		try {
+			long start = System.currentTimeMillis();
 			MainReport report = new MainReport();
 			report.getReport(Constant.prop_env.getProperty("goalPath") + "reprot.txt");
+			long end = System.currentTimeMillis();
+			System.out.println((end - start) * 1.0 / 1000 + " s");
 //			report.outputConfig();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

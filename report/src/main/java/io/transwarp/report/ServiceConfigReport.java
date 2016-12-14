@@ -81,12 +81,6 @@ public class ServiceConfigReport {
 			String configValues = answer.get(hostname);
 			//设置写入接下来解析内容的buffer
 			StringBuffer buffer = null;
-			if(configValues == null) {
-				buffer = new StringBuffer(serviceName).append(" :\n");
-			}else {
-				buffer = new StringBuffer(configValues);
-			}
-			buffer.append("  ").append(fileName).append("\n");
 			
 			if(key.endsWith(".sh") || key.endsWith("-env")) {
 				//用于缓存解析结果
@@ -110,7 +104,7 @@ public class ServiceConfigReport {
 					//截取变量值
 					String paramValue = line.substring(endIndex + 1).trim();
 					//若变量值中存在引号则去掉
-					if(paramValue.indexOf("\"") != -1) paramValue.replaceAll("\"", "");
+					if(paramValue.indexOf("\"") != -1) paramValue = paramValue.replaceAll("\"", "");
 //					logger.info(".sh file substring : " + paramName + " : " + paramValue);
 					//判断是否已存在该变量值，若存在则进行取舍，并将结果放入缓存
 					String oldValue = analysisValues.get(paramName);
@@ -139,7 +133,16 @@ public class ServiceConfigReport {
 						}
 					}
 				}
-				if(maps.size() >= 1) buffer.append(PrintToTableUtil.printToTable(maps, 60)).append("\n");
+				if(maps.size() >= 1) {
+					if(configValues == null) {
+						buffer = new StringBuffer();
+					}else {
+						buffer = new StringBuffer(configValues);
+					}
+					buffer.append(serviceName).append(" :\n");
+					buffer.append("  ").append(fileName).append("\n");
+					buffer.append(PrintToTableUtil.printToTable(maps, 60)).append("\n");
+				}
 			}else if(key.endsWith(".xml")) {
 				Configuration analysisValues = HBaseConfiguration.create();
 				byte[] fileValues = configs.get(key);
@@ -161,9 +164,18 @@ public class ServiceConfigReport {
 						}
 					}
 				}
-				if(maps.size() > 1) buffer.append(PrintToTableUtil.printToTable(maps, 60)).append("\n");
+				if(maps.size() > 1) {
+					if(configValues == null) {
+						buffer = new StringBuffer();
+					}else {
+						buffer = new StringBuffer(configValues);
+					}
+					buffer.append(serviceName).append(" :\n");
+					buffer.append("  ").append(fileName).append("\n");
+					buffer.append(PrintToTableUtil.printToTable(maps, 60)).append("\n");
+				}
 			}
-			answer.put(hostname, buffer.toString());
+			if(buffer != null) answer.put(hostname, buffer.toString());
 		}
 	}
 }

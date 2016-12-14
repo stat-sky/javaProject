@@ -3,7 +3,7 @@
     <name>inceptorServer</name>
     <ServiceRole>INCEPTOR_SERVER</ServiceRole>
     <logpath>/var/log/inceptorsql*/hive-server2.log</logpath>
-    <key>CurrentSession:current sessions,timedOut:is time-out and will be closed,duration:duration,exception:ERROR</key>
+    <key>CurrentSession:current sessions;timedOut:is time-out and will be closed;duration:duration;exception:ERROR</key>
   </logCheck>
   <logCheck>
     <name>metastore</name>

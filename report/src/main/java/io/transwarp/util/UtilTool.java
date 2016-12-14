@@ -9,8 +9,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.zip.GZIPInputStream;
 
 import net.sf.json.JSONArray;
@@ -242,15 +244,14 @@ public final class UtilTool {
 	/**
 	 * 检测时间是否在给出的时间范围内
 	 * @param checkTime 要进行检测的时间字符串
-	 * @param nowTime 当前时间字符串
+	 * @param nowTime 当前时间
 	 * @param rangeHouse 时间范围（多少小时内）
 	 * @return 是否在改范围内，在则返回true，不在返回false
 	 * @throws Exception 时间格式转换错误
 	 */
-	public static boolean checkDateTime(String checkTime, String nowTime, int rangeHouse) throws Exception{
+	public static boolean checkDateTime(String checkTime, long nowTime) throws Exception{
 		long checkTime1 = Constant.dateFormat.parse(checkTime).getTime();
-		long nowTime1 = Constant.dateFormat.parse(nowTime).getTime();
-		double result = (nowTime1 - checkTime1) * 1.0 / 1000 / 60 / 60 - rangeHouse;
+		double result = nowTime - checkTime1 - Constant.logTimeRange;
 		if(result > 0) return false;
 		else return true;
 	}
@@ -299,5 +300,26 @@ public final class UtilTool {
 			result.append(value).append(line).append("\n");
 		}
 		return result.toString();
+	}
+	
+	/**
+	 * 删除指定文件夹或文件
+	 * @param path 要删除的文件或文件夹路径
+	 */
+	public static void deleteFile(String path) {
+		Queue<String> queue = new LinkedList<String>();
+		queue.offer(path);
+		while(!queue.isEmpty()) {
+			String filePath = queue.poll();
+			File file = new File(filePath);
+			if(file.isFile()) {
+				if(!file.delete()) logger.info("delete file error, file path is : " + filePath);
+			}else if(file.isDirectory()) {
+				File[] files = file.listFiles();
+				for(File temp : files) {
+					queue.offer(temp.getAbsolutePath());
+				}
+			}
+		}
 	}
 }

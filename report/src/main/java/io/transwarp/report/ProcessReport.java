@@ -26,8 +26,6 @@ public class ProcessReport {
 		StringBuffer answer = new StringBuffer();
 		List<Element> configs = Constant.prop_processCheck.getAll();
 		for(Element config : configs) {
-			//列出标题
-			String name = config.elementText("name");
 			//执行shell语句获取信息
 			String command = config.elementText("command");
 			logger.info("executor command is : " + command);
@@ -88,7 +86,7 @@ public class ProcessReport {
 					}
 				}
 			}
-			buffer.append(PrintToTableUtil.printToTable(maps, 50));
+			buffer.append(PrintToTableUtil.printToTable(maps, 35));
 		}else {
 			if(delimited.equals("1")) delimited = "\\s+";
 			else if(delimited.equals("2")) delimited = " \\s+";
@@ -110,7 +108,7 @@ public class ProcessReport {
 					}
 				}
 			}
-			int centLength = 200 / maps.get(0).length;
+			int centLength = 140 / maps.get(0).length;
 			buffer.append(PrintToTableUtil.printToTable(maps, centLength));
 		}
 		return buffer.toString();
