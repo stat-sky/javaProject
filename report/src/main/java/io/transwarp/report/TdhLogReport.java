@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.transwarp.bean.NodeBean;
+import io.transwarp.bean.RoleBean;
 import io.transwarp.util.Constant;
 import io.transwarp.util.SessionTool;
 import io.transwarp.util.UtilTool;
@@ -37,14 +38,15 @@ public class TdhLogReport {
 	
 	public void getLogReport() {
 		//scp 日志文件到本地指定路径下
-		List<String> roles = this.node.getRoles();
+		List<RoleBean> roles = this.node.getRoles();
 		List<Element> configs = Constant.prop_logCheck.getAll();
 		for(Element config : configs) {
 			String serviceRole = config.elementText("ServiceRole");
 			logger.info(serviceRole);
 			boolean hasRole = false;
-			for(String role : roles) {
-				if(role.matches("\\S*" + serviceRole + "\\S*")) {
+			for(RoleBean role : roles) {
+				String roleType = role.getRoleType();
+				if(roleType.matches("\\S*" + serviceRole + "\\S*")) {
 					hasRole = true;
 					break;
 				}

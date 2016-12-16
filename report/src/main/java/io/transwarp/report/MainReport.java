@@ -11,7 +11,9 @@ import io.transwarp.util.HttpMethodTool;
 import io.transwarp.util.SessionTool;
 
 import java.io.FileWriter;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -69,16 +71,36 @@ public class MainReport {
 			String key = keys.next();
 			RoleBean role = roles.get(key);
 			String serviceName = role.getService().getName();
+//			logger.info(serviceName + " : " + key);
 			ServiceBean service = this.services.get(serviceName);
 			if(service == null) {
 				service = role.getService();
+				logger.info("add service : " + service.getName());
 				service.addRole(role);
 			}else {
 				service.addRole(role);
 			}
 			this.services.put(serviceName, service);
-			
 		}
+		//创建transwarp manager角色
+		RoleBean role_manager = new RoleBean();
+		role_manager.setRoleType("TranswarpManager");
+		role_manager.setHealth("UNKNOWN");
+		for(Iterator<String> hostnames = this.nodes.keySet().iterator(); hostnames.hasNext(); ) {
+			String hostname = hostnames.next();
+			NodeBean node = this.nodes.get(hostname);
+			if(node.getIsManaged().equals("true")) {
+				System.out.println("node is " + node.getHostName());
+				role_manager.setNode(node);
+				break;
+			}
+		}
+		ServiceBean service = this.services.get("TranswarpManager");
+		service.addRole(role_manager);
+		role_manager.setService(service);
+		this.services.put(service.getName(), service);
+		
+		
 		//获取平台服务配置信息
 		ServiceConfigReport configReport = new ServiceConfigReport(this.method, this.services);
 		try {
@@ -89,25 +111,13 @@ public class MainReport {
 		}
 	}
 	
-/*	public void outputConfig() throws Exception{
-		this.method = HttpMethodTool.getMethod("http://" + managerIP + ":8180", username, password);
-		init();
-		for(Iterator<String> keys = this.configs.keySet().iterator(); keys.hasNext(); ) {
-			String key = keys.next();
-			System.out.println(key);
-			String value = this.configs.get(key);
-			System.out.println(value);
-		}
-		this.method.close();
-	}*/
-	
 	public void getReport(String path) throws Exception {
 		this.method = HttpMethodTool.getMethod("http://" + managerIP + ":8180", username, password);
 		init();
 		//创建一个写文件
 		FileWriter output = new FileWriter(path);
 		//集群数据检测 —— 包括hdfs集群检测和数据表检测
-		StringBuffer url = new StringBuffer("jdbc:hive2://");
+		StringBuffer url = new StringBuffer("jdbc:hive2://").append(this.inceptorIP).append(":").append(this.port);
 		if(this.security.equals("kerberos")) {
 			String principal = Constant.prop_env.getProperty("principal");
 			String kuser = Constant.prop_env.getProperty("kuser");
@@ -118,20 +128,33 @@ public class MainReport {
 			url.append("kuser=").append(kuser).append(";");
 			url.append("keytab=").append(keytab).append(";");
 			url.append("krb5conf=").append(krb5conf);
-		}else {
-			url.append(this.inceptorIP).append(":").append(this.port);
 		}
 		TDHDataReport dataReport = new TDHDataReport(this.security, this.managerIP, this.nodeUser, this.nodePwd, url.toString(), 
 				this.jdbcUser, this.jdbcPwd, this.hdfsPwd);
-		output.write(dataReport.getDataReport());
+		//集群版本号
+		output.write("集群版本号为：" + dataReport.getVersion() + "\n\n");
 		//平台服务角色分布
 		ServiceRoleMapReport roleMap = new ServiceRoleMapReport(this.nodes, this.services);
 		output.write(roleMap.getRoleMap());
+		
+		output.write(dataReport.getDataReport());
 		//进程检测
-		SessionTool session = SessionTool.getSession(inceptorIP, nodeUser, nodePwd);
-		ProcessReport processReport = new ProcessReport(session);
-		output.write(processReport.getProcessReport());
-		session.close();
+		for(Iterator<String> hostnames = this.nodes.keySet().iterator(); hostnames.hasNext(); ){
+			String hostname = hostnames.next();
+			NodeBean node = this.nodes.get(hostname);
+			List<RoleBean> nodeRoles = node.getRoles();
+			for(RoleBean nodeRole : nodeRoles) {
+				String roleType = nodeRole.getRoleType();
+				if(roleType == null) continue;
+				if(roleType.equals("INCEPTOR_SERVER")) {
+					SessionTool session = SessionTool.getSession(node.getIpAddress(), nodeUser, nodePwd);
+					ProcessReport processReport = new ProcessReport(session, nodeRole.getService().getName());
+					output.write(processReport.getProcessReport());
+					session.close();					
+				}
+			}
+		}
+
 		//节点检测
 		for(Iterator<String> hostnames = this.nodes.keySet().iterator(); hostnames.hasNext(); ) {
 			String hostname = hostnames.next();
@@ -154,15 +177,52 @@ public class MainReport {
 	}
 	
 /*	public void getRoleMap() {
+		try {
+			this.method = HttpMethodTool.getMethod("http://" + managerIP + ":8180", username, password);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		init();
+		for(Iterator<String> keys = this.services.keySet().iterator(); keys.hasNext(); ) {
+			String key = keys.next();
+			ServiceBean service = this.services.get(key);
+			logger.info("serviceId is : " + service.getId() + ", service is : " + service.getName());
+			System.out.println(key + " : \n");
+			List<RoleBean> roles = service.getRoles();
+			for(RoleBean role : roles) {
+				System.out.println("  " + role.getName() + " : " + role.getRoleType() + " : " + role.getService().getName());
+			}
+		}
 		ServiceRoleMapReport roleMap = new ServiceRoleMapReport(this.nodes, this.services);
 		System.out.println(roleMap.getRoleMap());
+	}
+
+	public void outputConfig() throws Exception{
+		this.method = HttpMethodTool.getMethod("http://" + managerIP + ":8180", username, password);
+		init();
+		for(Iterator<String> keys = this.configs.keySet().iterator(); keys.hasNext(); ) {
+			String key = keys.next();
+			System.out.println(key);
+			String value = this.configs.get(key);
+			System.out.println(value);
+		}
+		this.method.close();
 	}*/
 	
 	public static void main(String[] args) {
 		try {
+			//获取当期日期
+			Date date = new Date();
+			String dateTime = Constant.dateFormat.format(date);
+			int endIndex = dateTime.indexOf(" ");
+			if(endIndex != -1) {
+				dateTime = dateTime.substring(0, endIndex);
+			}
 			long start = System.currentTimeMillis();
 			MainReport report = new MainReport();
-			report.getReport(Constant.prop_env.getProperty("goalPath") + "reprot.txt");
+			report.getReport(Constant.prop_env.getProperty("goalPath") + "REPORT-" + dateTime + ".txt");
+//			report.getRoleMap();
 			long end = System.currentTimeMillis();
 			System.out.println((end - start) * 1.0 / 1000 + " s");
 //			report.outputConfig();

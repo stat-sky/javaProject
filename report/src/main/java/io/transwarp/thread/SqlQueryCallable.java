@@ -1,9 +1,7 @@
 package io.transwarp.thread;
 
-import io.transwarp.util.JDBCConnectionTool;
 import io.transwarp.util.UtilTool;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,35 +16,20 @@ import org.apache.log4j.Logger;
 public class SqlQueryCallable implements Callable<List<Object>>{
 
 	private static Logger logger = Logger.getLogger(SqlQueryCallable.class);
-	private String security;
-	private String url;
-	private String jdbcUser;
-	private String jdbcPwd;
+	private Connection conn;
 	private String sql;
 	private Class clazz;
 	
-	public SqlQueryCallable(String security, String url, String sql, Class clazz) {
-		this(security, url, sql, clazz, null, null);
-	}
-	public SqlQueryCallable(String security, String url, String sql, Class clazz, String jdbcUser, String jdbcPwd) {
-		this.security = security;
-		this.url = url;
-		this.jdbcUser = jdbcUser;
-		this.jdbcPwd = jdbcPwd;
+	public SqlQueryCallable(Connection conn, String sql, Class clazz) {
+		this.conn = conn;
 		this.sql = sql;
 		this.clazz = clazz;
 	}
 	
+	
 	@Override
 	public List<Object> call() {
 		List<Object> results = new ArrayList<Object>();
-		//获取jdbc连接
-		Connection conn = null;
-		if(this.security.equals("simple") || this.security.equals("kerberos")) {
-			conn = JDBCConnectionTool.getConnection(url);
-		}else if(this.security.equals("ldap") || this.security.equals("all")) {
-			conn = JDBCConnectionTool.getConnection(url, jdbcUser, jdbcPwd);
-		}
 		//查询数据
 		try {
 			Statement stat = conn.createStatement();

@@ -91,11 +91,17 @@ public class RoleBean {
 		NodeBean node = new NodeBean(jsonObject);
 		this.node = node.getHostName();
 	}
+	public void setNode(NodeBean node) {
+		this.node = node.getHostName();
+	}
 	public ServiceBean getService() {
 		return service;
 	}
 	public void setService(String json) {
 		this.service = new ServiceBean(json);
+	}
+	public void setService(ServiceBean service) {
+		this.service = service;
 	}
 	
 	@Override

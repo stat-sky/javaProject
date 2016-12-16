@@ -1,25 +1,25 @@
 <processChecks>
   <processCheck>
-    <name>服务 InceptorServer2 进程的 jinfo 检测 :</name>
+    <name>InceptorServer2 进程的 jinfo 检测 :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jinfo</command>
     <property>java.version;agentpath(Xmx,Xmx,Xss)</property>
     <delimited> </delimited>
     <resident>false</resident>
   </processCheck>
   <processCheck>
-    <name>服务 InceptorServer2 进程的 jmap 前 20 行 :</name>
+    <name>InceptorServer2 进程的 jmap 前 20 行 :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jmap -histo:live | head -n 23</command>
     <delimited>2</delimited>  <!-- 表示至少二个空格 -->
     <resident>false</resident>
   </processCheck>
   <processCheck>
-    <name>服务 InceptorServer2 进程的 jstat gc :</name>
+    <name>InceptorServer2 进程的 jstat gc :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jstat -gc</command>
     <delimited>1</delimited>  <!-- 表示至少一个空格 -->
     <resident>truc</resident>
   </processCheck>
   <processCheck>
-    <name>服务 InceptorServer2 进程的 jstack NUMABLE :</name>
+    <name>InceptorServer2 进程的 jstack NUMABLE :</name>
     <command>jps -l | grep InceptorServer2 | cut -f 1 -d " " | xargs sudo -u hive /usr/java/latest/bin/jstack | grep RUNNABLE | wc -l</command>
     <resident>false</resident>
   </processCheck>

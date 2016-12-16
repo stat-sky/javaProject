@@ -31,7 +31,7 @@ public class NodeBean {
 	private String disk;					//磁盘信息
 	private String osType;					//操作系统
 	private String serverKey;				//机器码
-	private List<String> roles;				//包含的服务角色类型
+	private List<RoleBean> roles;				//包含的服务角色
 
 	public NodeBean() {
 		super();
@@ -169,22 +169,24 @@ public class NodeBean {
 	public void setServerKey(String serverKey) {
 		this.serverKey = serverKey;
 	}
-	public List<String> getRoles() {
+	public List<RoleBean> getRoles() {
 		return roles;
 	}
 	public void setRoles(String json) {
-		this.roles = new ArrayList<String>();
+		this.roles = new ArrayList<RoleBean>();
 //		System.out.println(json);
 		if(json == null || json.equals("")) return;
 		JSONArray array = JSONArray.fromObject(json);
 		for(int i = 0; i < array.size(); i++) {
-			JSONObject role = array.getJSONObject(i);
-			this.roles.add(role.getString("roleType"));
+			RoleBean role = new RoleBean(array.getJSONObject(i));
+			this.roles.add(role);
 		}
 	}
 	public void addRole(String roleType) {
-		if(this.roles == null) this.roles = new ArrayList<String>();
-		roles.add(roleType);
+		if(this.roles == null) this.roles = new ArrayList<RoleBean>();
+		RoleBean role = new RoleBean();
+		role.setRoleType(roleType);
+		roles.add(role);
 	}
 	
 	@Override

@@ -4,6 +4,7 @@ import io.transwarp.bean.NodeBean;
 import io.transwarp.bean.RoleBean;
 import io.transwarp.bean.ServiceBean;
 import io.transwarp.util.PrintToTableUtil;
+import io.transwarp.util.UtilTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class ServiceRoleMapReport {
 			}
 		}
 		try {
-			answer.append(PrintToTableUtil.printToTable(maps, 30));
+			answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 30), "  "));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

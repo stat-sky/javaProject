@@ -141,7 +141,7 @@ public class ServiceConfigReport {
 					}
 					buffer.append(serviceName).append(" :\n");
 					buffer.append("  ").append(fileName).append("\n");
-					buffer.append(PrintToTableUtil.printToTable(maps, 60)).append("\n");
+					buffer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 60), "  ")).append("\n");
 				}
 			}else if(key.endsWith(".xml")) {
 				Configuration analysisValues = HBaseConfiguration.create();
@@ -172,7 +172,7 @@ public class ServiceConfigReport {
 					}
 					buffer.append(serviceName).append(" :\n");
 					buffer.append("  ").append(fileName).append("\n");
-					buffer.append(PrintToTableUtil.printToTable(maps, 60)).append("\n");
+					buffer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 60), "  ")).append("\n");
 				}
 			}
 			if(buffer != null) answer.put(hostname, buffer.toString());

@@ -5,6 +5,7 @@ import io.transwarp.util.Constant;
 import io.transwarp.util.HttpMethodTool;
 import io.transwarp.util.UtilTool;
 
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -37,12 +38,17 @@ public class RoleCallable implements Callable<Map<String, RoleBean>>{
 			String url = UtilTool.buildURL(config.elementText("url"), urlParam);
 			//执行http方法获取结果
 			String exec_result = this.method.execute(url, config.elementText("http-method"), null);
+/*			
+			FileWriter writer = new FileWriter("/home/xhy/temp/serviceRole.json");
+			writer.write(exec_result);
+			writer.close();*/
 			JSONArray array = JSONArray.fromObject(exec_result);
 			int number = array.size();
 			logger.info("found service role number is " + number);
 			for(int i = 0; i < number; i++) {
 				RoleBean role = new RoleBean(array.getJSONObject(i));
-				roles.put(role.getName(), role);
+				String serviceName = role.getService().getName();
+				roles.put(serviceName + role.getName(), role);
 			}
 		}catch(Exception e) {
 			logger.error("find service role error : " + e.getMessage());

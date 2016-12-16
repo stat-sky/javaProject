@@ -1,5 +1,9 @@
 package io.transwarp.report;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,8 +12,10 @@ import java.util.Queue;
 import io.transwarp.bean.TableBean;
 import io.transwarp.thread.SqlQueryCallable;
 import io.transwarp.util.Constant;
+import io.transwarp.util.JDBCConnectionTool;
 import io.transwarp.util.PrintToTableUtil;
 import io.transwarp.util.SessionTool;
+import io.transwarp.util.UtilTool;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -23,9 +29,7 @@ public class TDHDataReport {
 	private String nodeUser;
 	private String nodePwd;
 	//连接jdbc信息
-	private String inceptorURL;
-	private String jdbcUser;
-	private String jdbcPwd;
+	private Connection conn;
 	//hdfs用户密码-用于kerberos认证
 	private String hdfsPwd;
 	
@@ -47,11 +51,13 @@ public class TDHDataReport {
 		this.ipAddress = ipAddress;
 		this.nodePwd = nodePwd;
 		this.nodeUser = nodeUser;
-		this.inceptorURL = inceptorURL;
-		this.jdbcUser = jdbcUser;
-		this.jdbcPwd = jdbcPwd;
 		this.hdfsPwd = hdfsPwd;
 		try {
+			if(security.equals("kerberos") || security.equals("simple")) {
+				this.conn = JDBCConnectionTool.getConnection(inceptorURL);
+			}else {
+				this.conn = JDBCConnectionTool.getConnection(inceptorURL, jdbcUser, jdbcPwd);
+			}
 			this.session = SessionTool.getSession(ipAddress, nodeUser, nodePwd);
 			if(security.equals("kerberos") || security.equals("all")) {
 				this.sendShellScript();
@@ -68,11 +74,36 @@ public class TDHDataReport {
 	 */
 	public String getDataReport() {
 		StringBuffer answer = new StringBuffer();
+/*		//获取集群版本号
+		answer.append("集群版本号为：").append(this.getVersion()).append("\n\n");		*/
+		//获取集群整体检测结果
 		answer.append(this.getHDFSReport()).append("\n\n");
+		//获取集群中表空间检测结果
 		answer.append(this.getTableInfoReport()).append("\n\n");
 		this.deleteScript();
+		try {
+			this.conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return answer.toString();	
 	}
+	
+	public String getVersion() {
+		try {
+			Statement stat = this.conn.createStatement();
+			ResultSet rs = stat.executeQuery(Constant.SELECT_VERSION);
+			while(rs.next()) {
+				String version = rs.getString("tdh_version");
+				return version;
+			}
+		}catch(Exception e) {
+			logger.error("get tdh version error, error message is : " + e.getMessage());
+		}
+		return null;
+	}
+	
 	public String getHDFSReport() {
 		StringBuffer answer = new StringBuffer("HDFS集群数据检测 :\n");
 		Element totalConfig = Constant.prop_report.getElement("topic", "HDFSCheck");
@@ -91,7 +122,7 @@ public class TDHDataReport {
 				for(String line : lines) {
 					if(line.trim().equals("")) {
 						if(maps.size() > 0) {
-							answer.append(PrintToTableUtil.printToTable(maps, 60));
+							answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 60), "  "));
 							maps.clear();
 						}
 						answer.append("\n");
@@ -104,7 +135,7 @@ public class TDHDataReport {
 					}
 				}
 				if(maps.size() > 0) {
-					answer.append(PrintToTableUtil.printToTable(maps, 60));
+					answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 60), "  "));
 					maps.clear();
 				}
 			} catch (Exception e) {
@@ -121,9 +152,12 @@ public class TDHDataReport {
 		StringBuffer answer = new StringBuffer("数据表检测 :\n");
 		//用来建立表格的缓存数据
 		List<String[]> maps = new ArrayList<String[]>();
-		maps.add(new String[]{"database", "owner", "table", "type", "maxDir", "minDir", "countDir", "avgDir", "maxFile", "minFile", "countFile", "avgFile"});
+//		maps.add(new String[]{"database", "owner", "table", "type", "maxDir", "minDir", "countDir", "avgDir", "maxFile", "minFile", "countFile", "avgFile"});
+//		maps.add(new String[]{"数据库名","所有者","表名","表类型","最大文件夹大小","最小文件夹大小","总文件夹数","平均文件夹大小","最大文件大小","最小文件大小","总文件数","平均文件大小"});
+		maps.add(new String[]{"数据库名","所有者","表名","表类型","文件夹:最大|最小|平均(b)","文件:最大|最小|平均(b)"});
+		
 		//从数据库中查询表的数据字典，获取相关信息
-		SqlQueryCallable sqlQuery = new SqlQueryCallable(this.security, this.inceptorURL, Constant.SELECT_TABLES, TableBean.class, this.jdbcUser, this.jdbcPwd);
+		SqlQueryCallable sqlQuery = new SqlQueryCallable(this.conn, Constant.SELECT_TABLES, TableBean.class);
 		List<Object> tables = sqlQuery.call();
 		for(Object item : tables) {
 			TableBean table = (TableBean)item;
@@ -161,13 +195,12 @@ public class TDHDataReport {
 					logger.error("query dir or file error : " + e.getMessage());
 				}				
 			}
-			StringBuffer tableInfo = new StringBuffer();
 			maps.add(new String[]{table.getDatabase_name(), table.getOwner_name(), table.getTable_name(), table.checkTableType(), 
-					table.getMaxDir() + "", table.getMinDir() + "", table.getCountDir() + "", table.getAvgDir(), table.getMaxFile() + "",
-					table.getMinFile() + "", table.getCountFile() + "", table.getAvgFile()});
+					table.getMaxDir() + "|" + table.getMinDir() + "|" + table.getAvgDir(), 
+					table.getMaxFile() + "|" + table.getMinFile() + "|" + table.getAvgFile()});
 		}
 		try {
-			answer.append(PrintToTableUtil.printToTable(maps, 20));
+			answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 30), "  "));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

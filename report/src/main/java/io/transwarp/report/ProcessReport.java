@@ -17,9 +17,14 @@ public class ProcessReport {
 
 	private static Logger logger = Logger.getLogger(ProcessReport.class);
 	private SessionTool session;
+	private String serviceName;
 	
 	public ProcessReport(SessionTool session) {
 		this.session = session;
+	}
+	public ProcessReport(SessionTool session, String serviceName) {
+		this.session = session;
+		this.serviceName = serviceName;
 	}
 	
 	public String getProcessReport() {
@@ -46,13 +51,13 @@ public class ProcessReport {
 	}
 	
 	private String analysisResultByDelimited(String exec_result, Element config, String delimited) throws Exception{
-		StringBuffer buffer = new StringBuffer(config.elementText("name")).append("\n");
+		StringBuffer buffer = new StringBuffer("服务 ").append(this.serviceName).append(" 的 ").append(config.elementText("name")).append("\n");
 		String[] lines = exec_result.trim().split("\n");
 		String property = config.elementText("property");
 		//存储数据，用来生成表格
 		List<String[]> maps = new ArrayList<String[]>();
 		if(property != null) {
-			maps.add(new String[]{"key", "value"});  //表格标题
+			maps.add(new String[]{"参数", "值"});  //表格标题
 			String[] props = property.split(";");
 			for(String line : lines) {
 				//对该行进行切分
@@ -86,7 +91,7 @@ public class ProcessReport {
 					}
 				}
 			}
-			buffer.append(PrintToTableUtil.printToTable(maps, 35));
+			buffer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 35), "  "));
 		}else {
 			if(delimited.equals("1")) delimited = "\\s+";
 			else if(delimited.equals("2")) delimited = " \\s+";
@@ -109,17 +114,16 @@ public class ProcessReport {
 				}
 			}
 			int centLength = 140 / maps.get(0).length;
-			buffer.append(PrintToTableUtil.printToTable(maps, centLength));
+			buffer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, centLength), "  "));
 		}
 		return buffer.toString();
 	}
 	
 	private String analysisResultNotDelimited(String exec_result, Element config) throws Exception{
 		String property = config.elementText("property");
-		String name = config.elementText("name");
+		String name = "服务 " + this.serviceName + " 的 " + config.elementText("name");
 		String[] lines = exec_result.split("\n");
 		List<String[]> maps = new ArrayList<String[]>();
-		maps.add(new String[]{"key", "value"});
 		if(property != null) {
 			for(String line : lines) {
 				if(line.indexOf(property) != -1) {
@@ -132,7 +136,7 @@ public class ProcessReport {
 			}
 		}
 		StringBuffer buffer = new StringBuffer("\n");
-		buffer.append(PrintToTableUtil.printToTable(maps, 60));
+		buffer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 60), "  "));
 		return buffer.toString();
 	}
 }

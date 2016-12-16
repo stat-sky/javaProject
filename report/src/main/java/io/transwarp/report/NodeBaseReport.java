@@ -45,7 +45,7 @@ public class NodeBaseReport {
 		StringBuffer answer = new StringBuffer("节点基本信息 : \n");
 		List<String[]> maps_nodeBase = new ArrayList<String[]>();
 		//标题
-		maps_nodeBase.add(new String[]{"parameter", "value"});
+		maps_nodeBase.add(new String[]{"检测项", "值"});
 		//节点信息
 		maps_nodeBase.add(new String[]{"isManager", node.getIsManaged()});
 		maps_nodeBase.add(new String[]{"hostname", node.getHostName()});
@@ -58,7 +58,7 @@ public class NodeBaseReport {
 		maps_nodeBase.add(new String[]{"cpu", node.getCpu()});
 		maps_nodeBase.add(new String[]{"osType", node.getOsType()});
 		try {
-			answer.append(PrintToTableUtil.printToTable(maps_nodeBase, 50));
+			answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps_nodeBase, 50), "  "));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -165,7 +165,7 @@ public class NodeBaseReport {
 			}	
 		}
 		try {
-			answer.append(PrintToTableUtil.printToTable(maps, 30));
+			answer.append(UtilTool.retract(PrintToTableUtil.printToTable(maps, 30), "  "));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
